@@ -304,7 +304,7 @@ $(".header_tipo_ayuda span").click(function () {
 $(document).ready(function () {
    if (window.matchMedia('(min-width: 968px)').matches) {
     var encabezado = $("#titulo_container").height();
-    $('#imagen_content').css("height", encabezado * 3 + 160);
+    $('#imagen_content').css("height", encabezado * 3 + 370);
   }else{
     console.log('movil')
     var encabezado = $("#titulo_container").height();
@@ -366,7 +366,7 @@ $(window).resize(function () {
 
    if (window.matchMedia('(min-width: 968px)').matches) {
     var encabezado = $("#titulo_container").height();
-    $('#imagen_content').css("height", encabezado * 3 + 160);
+    $('#imagen_content').css("height", encabezado * 3 + 370);
   }else{
     var encabezado = $("#titulo_container").height();
     $('#imagen_content').css("height", encabezado * 1 + 300);

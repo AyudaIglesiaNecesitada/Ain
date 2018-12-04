@@ -1,8 +1,3 @@
-var testUrl = 'https://drmbackend1.localtunnel.me/';
-var prodUrl = 'https://api4drmv1.ayudaalaiglesianecesitada.org/';
-var UserAuth = 'drm_system@ayudaalaiglesianecesitada.org';
-var UserPass = 'hXsQRame46';
-
 var idClient = window.localStorage.getItem('clientID');
 var idDonacion = window.localStorage.getItem('donationID');
 var newClient = window.localStorage.getItem('newClient');
@@ -10,30 +5,28 @@ var renovalDate = window.localStorage.getItem('renovalDate');
 $(document).ready(function(){
     $('.renovalDate').text(renovalDate);
     $.ajax({
-        url: prodUrl+'donation_via_landing_page/authenticate',
+        url: window.location.origin+'/donar/service.php',
         method: 'POST',
         data: {
-            front: 'landing-page',
-            user: UserAuth,
-            password: UserPass
+            op: 'at'
         },
         success: (data) => {
-            console.log(data);
-            if(data.data.auth_token) {
-                var authToken = data.data.auth_token;
+            var dataN = JSON.parse(data);
+            if(dataN.data.auth_token) {
+                var authToken = dataN.data.auth_token;
                 $.ajax({
-                    url: prodUrl+'donation_via_landing_page/get_client_and_donation_info',
-                    method: 'POST',
-                    headers: {"Authorization": authToken },
+                    url: window.location.origin+'/donar/service.php',
+                    method: 'POST',                    
                     data: {
-                        front: "landing-page",
+                        op: 'gd',
+                        tk: authToken,
                         client_id: idClient,
                         donation_id: idDonacion
                     },
                     success: (data2) => {
-                        var info = data2.data;
-                        console.log(info);
-                        if(data2.codeError == false) {
+                        var dataN2 = JSON.parse(data2);
+                        var info = dataN2.data;
+                        if(dataN2.codeError == false) {
                             $('.nombre_client').text(info.client.first_name);
                             $('.donation_amount').text(info.donation.amount+'€');
                             $('.campana_name').text(info.donation.campaign);
@@ -198,7 +191,7 @@ $("#btn_enviar").click(function (e) {
                 $('#btn_enviar').append('<i class="material-icons" id="loading-i">autorenew</i>');
                 $('#loading-i').addClass('spin-loader')
                 var objectDataUpdate = {
-                    "front": "landing-page",
+                    "op": "up",
                     "client_id": idClient,
                     "person_type": "Individual",
                     "business_name": "",
@@ -217,17 +210,15 @@ $("#btn_enviar").click(function (e) {
                     "city_id": ciudad
                 };
                 $.ajax({
-                    url: prodUrl+'donation_via_landing_page/authenticate',
+                    url: window.location.origin+'/donar/service.php',
                     method: 'POST',
                     data: {
-                        front: 'landing-page',
-                        user: UserAuth,
-                        password: UserPass
+                        op: 'at'
                     },
                     success: (data) => {
-                        console.log(data);
-                        if(data.data.auth_token) {
-                            var authToken = data.data.auth_token;
+                        var data2 = JSON.parse(data);
+                        if(data2.data.auth_token) {
+                            var authToken = data2.data.auth_token;
                             updateDataCliente(objectDataUpdate, authToken);
                         } else {
                             console.log(data);
@@ -300,7 +291,7 @@ $("#btn_enviar").click(function (e) {
                 $('#btn_enviar').append('<i class="material-icons" id="loading-i">autorenew</i>');
                 $('#loading-i').addClass('spin-loader')
                 var objectDataUpdate = {
-                    "front": "landing-page",
+                    "op": "up",
                     "client_id": idClient,
                     "person_type": "Individual",
                     "business_name": "",
@@ -319,17 +310,15 @@ $("#btn_enviar").click(function (e) {
                     "city_id": ciudad
                 };
                 $.ajax({
-                    url: prodUrl+'donation_via_landing_page/authenticate',
+                    url: window.location.origin+'/donar/service.php',
                     method: 'POST',
                     data: {
-                        front: 'landing-page',
-                        user: UserAuth,
-                        password: UserPass
+                        op: 'at'
                     },
                     success: (data) => {
-                        console.log(data);
-                        if(data.data.auth_token) {
-                            var authToken = data.data.auth_token;
+                        var data2 = JSON.parse(data);
+                        if(data2.data.auth_token) {
+                            var authToken = data2.data.auth_token;
                             updateDataCliente(objectDataUpdate, authToken);
                         } else {
                             $('.validacion-errors').removeClass('dnone');
@@ -422,7 +411,7 @@ $("#btn_enviar").click(function (e) {
                 $('#btn_enviar').append('<i class="material-icons" id="loading-i">autorenew</i>');
                 $('#loading-i').addClass('spin-loader')
                 var objectDataUpdateOrg = {
-                    "front": "landing-page",
+                    "op": "up",
                     "client_id": idClient,
                     "person_type": "Organización",
                     "business_name": nombre_empresa,
@@ -441,17 +430,15 @@ $("#btn_enviar").click(function (e) {
                     "city_id": ciudad_organizacion
                 };
                 $.ajax({
-                    url: prodUrl+'donation_via_landing_page/authenticate',
+                    url: window.location.origin+'/donar/service.php',
                     method: 'POST',
                     data: {
-                        front: 'landing-page',
-                        user: UserAuth,
-                        password: UserPass
+                        op:'at'
                     },
                     success: (data) => {
-                        console.log(data);
-                        if(data.data.auth_token) {
-                            var authToken = data.data.auth_token;
+                        var data2 = JSON.parse(data);
+                        if(data2.data.auth_token) {
+                            var authToken = data2.data.auth_token;
                             updateDataCliente(objectDataUpdateOrg, authToken);
                         } else {
                             console.log(data);
@@ -514,7 +501,7 @@ $("#btn_enviar").click(function (e) {
                     $('#btn_enviar').append('<i class="material-icons" id="loading-i">autorenew</i>');
                     $('#loading-i').addClass('spin-loader')
                     var objectDataUpdateOrg = {
-                        "front": "landing-page",
+                        "op": "up",
                         "client_id": idClient,
                         "person_type": "Organización",
                         "business_name": nombre_empresa,
@@ -533,17 +520,15 @@ $("#btn_enviar").click(function (e) {
                         "city_id": ciudad_organizacion
                     };
                     $.ajax({
-                        url: prodUrl+'donation_via_landing_page/authenticate',
+                        url: window.location.origin+'/donar/service.php',
                         method: 'POST',
                         data: {
-                            front: 'landing-page',
-                            user: UserAuth,
-                            password: UserPass
+                            op:'at'
                         },
                         success: (data) => {
-                            console.log(data);
-                            if(data.data.auth_token) {
-                                var authToken = data.data.auth_token;
+                            var data2 = JSON.parse(data);
+                            if(data2.data.auth_token) {
+                                var authToken = data2.data.auth_token;
                                 updateDataCliente(objectDataUpdateOrg, authToken);
                             } else {
                                 console.log(data);
@@ -591,12 +576,7 @@ $("#btn_enviar").click(function (e) {
                         $('#telefono_organizacion').removeClass('border-danger');
                         $('#telefono_organizacion').addClass('border-success');
                         $('.vali_telefono_organizacion').addClass('hide');
-                    }                               
-                    // if ($('#vali_politicas_individual').prop("checked")) {
-                    //     $('.vali_politicas_organizacion').addClass('hide');
-                    // } else {
-                    //     $('.vali_politicas_organizacion').removeClass('hide');
-                    // }        
+                    }
                }
        }
 
@@ -606,14 +586,14 @@ $("#btn_enviar").click(function (e) {
 
 
 function updateDataCliente(dataLead, authToken) {
+    dataLead.tk = authToken;
     $.ajax({
-        url: prodUrl+'donation_via_landing_page/update_client',
-        method: 'PUT',
+        url: window.location.origin+'/donar/service.php',
+        method: 'POST',
         data: dataLead,
-        headers: { "Authorization": authToken },
         success: (data) => {
-            console.log(data);
-            if(data.codeError == false) {
+            var data2 = JSON.parse(data);
+            if(data2.codeError == false) {
                 window.dataLayer.push({
                     'event': 'basics'
                 });
@@ -624,6 +604,9 @@ function updateDataCliente(dataLead, authToken) {
                     window.location.href = '/donar/gracias.php?cid='+cid
                 }, 3000);
             } else {
+                console.log(data);
+                $('#btn_enviar').removeAttr('disabled');
+                $('#loading-i').remove();
                 $('.validacion-errors').removeClass('dnone');
             }
         },

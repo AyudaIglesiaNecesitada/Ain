@@ -1,9 +1,4 @@
 var MONTO = 0;
-var testUrl = 'https://drmbackend3.localtunnel.me/';
-var prodUrl = 'https://api4drmv1.ayudaalaiglesianecesitada.org/';
-var UserAuth = 'drm_system@ayudaalaiglesianecesitada.org';
-var UserPass = 'hXsQRame46';
-
 var tokenId = ""
 var operation = 0
 var arrayProvincias = {};
@@ -49,9 +44,6 @@ function scrollWin() {
 }
 
 $(document).ready(function () {
-    //Ain test: pk_test_Pf7GYXa1EU9TsdJpFnh1wTyR
-    //test tmk: pk_test_roJMaFcjEdUCdjRJmn7mE1rQ
-    //Ain live: pk_live_982mkIekStj9hUS1tp3yMUmq
     stripe = Stripe('pk_live_982mkIekStj9hUS1tp3yMUmq');
     elements = stripe.elements();
     window.localStorage.setItem('clientID', '');
@@ -219,21 +211,22 @@ $("#btn_continuar").click(function (e) {
             $('#btn_continuar').append('<i class="material-icons" id="loading-i">autorenew</i>');
             $('#loading-i').addClass('spin-loader')
             $.ajax({
-                url: prodUrl+'donation_via_landing_page/authenticate',
+                url: window.location.origin+'/donar/service.php',
                 method: 'POST',
                 data: {
-                    front: 'landing-page',
-                    user: UserAuth,
-                    password: UserPass
+                    op: 'at',
                 },
                 success: (data) => {
-                    console.log(data);
-                    if(data.data.auth_token) {
-                        var authToken = data.data.auth_token;
+                    var data2 = JSON.parse(data);
+                    if(data2.data.auth_token) {
+                        console.log('Paso')
+                        var authToken = data2.data.auth_token;
                         createDonationIban(objectData, authToken);
                     } else {
+                        console.log('No Paso');
+                        $('#btn_continuar').removeAttr('disabled');
                         $('.validacion-errors').removeClass('dnone');
-                        console.log(data);
+                        $('#loading-i').remove();
                     }
                 },
                 error: (error) => {
@@ -319,30 +312,31 @@ $("#btn_continuar").click(function (e) {
             stripe.createToken(cardNumber).then( result => {
                 if(result.token) {
                     $.ajax({
-                        url: prodUrl+'donation_via_landing_page/authenticate',
+                        url: window.location.origin+'/donar/service.php',
                         method: 'POST',
                         data: {
-                            front: 'landing-page',
-                            user: UserAuth,
-                            password: UserPass
+                            op: 'at',
                         },
                         success: (data) => {
-                            console.log(data);
-                            if(data.data.auth_token) {
-                                var authToken = data.data.auth_token;
+                            var data2 = JSON.parse(data);
+                            if(data2.data.auth_token) {                                
+                                console.log('Paso');
+                                var authToken = data2.data.auth_token;
                                 createDonation(result, objectData, authToken);
                             } else {
+                                console.log('No Paso');
+                                $('#btn_continuar').removeAttr('disabled');
                                 $('.validacion-errors').removeClass('dnone');
+                                $('#loading-i').remove();
                             }
                         },
                         error: (error) => {
                             $('#btn_continuar').removeAttr('disabled');
-                            $('#loading-i').remove();
                             $('.validacion-errors').removeClass('dnone');
+                            $('#loading-i').remove();
                             console.log(error);
                         }
                     })
-                    console.log(result.token.id);
                     console.log(objectData);
                     
                 } else {
@@ -414,7 +408,8 @@ function createDonation(stripeToken, dataLead, authToken) {
         localStorage.setItem('tipo', tipoSessionPago)
 
         var dataToDrm = {
-            "front": "landing-page",
+            "op": "donc",
+            "tk": authToken,
             "frequency": frequency,
             "amount": dataLead.monto,
             "campaign": dataLead.nombreCampana,
@@ -431,36 +426,25 @@ function createDonation(stripeToken, dataLead, authToken) {
             "anonymous": $('#check_donacion_anonima').prop('checked'),
             "payment_type": "Tarjeta de crédito",
             "stripe_token": token,
-            "direct_debit" : {
-                "b_owner": "",
-                "b_iban": "",
-                "b_bank": "",
-                "b_office": "",
-                "b_dc": "",
-                "b_number": ""
-            },
-            "utm" : {
-                "utm_campaign": $('#utm_campaign').val().trim(),
-                "utm_source": $('#utm_source').val().trim(),
-                "utm_medium": $('#utm_medium').val().trim(),
-                "utm_content": $('#utm_content').val().trim(),
-                "utm_term": $('#utm_term').val().trim()
-            },
+            "utm_campaign": $('#utm_campaign').val().trim(),
+            "utm_source": $('#utm_source').val().trim(),
+            "utm_medium": $('#utm_medium').val().trim(),
+            "utm_content": $('#utm_content').val().trim(),
+            "utm_term": $('#utm_term').val().trim(),
             "personal_data_auth" : $('#aceptar_politicas').val()
         }
         $.ajax({
-            url: prodUrl+'donation_via_landing_page/add_donation',
+            url: window.location.origin+'/donar/service.php',
             method: 'POST',
             data: dataToDrm,
-            headers: {"Authorization": authToken },
             success: (data) => {
-                console.log(data);
-                if(data.data.client) {
+                var data2 = JSON.parse(data);
+                if(data2.data.client) {
                     /*window.MONTO = $('#input_cantidad').val().trim();
                     window.dataLayer.push({
                         event: 'donationEnd'
                     });*/
-                    var response = data.data;
+                    var response = data2.data;
                     var fecha = new Date();
                     var dia = String(fecha.getDate());
                     var diaF = dia.lenght > 1 ? `0${dia}` : `${dia}`;
@@ -510,12 +494,14 @@ function createDonation(stripeToken, dataLead, authToken) {
                 } else {
                     $('.validacion-errors').removeClass('dnone');
                     console.log(data);
+                    $('#btn_continuar').removeAttr('disabled');
+                    $('#loading-i').remove();
                 }
             },
             error: (err) => {
                 $('#btn_continuar').removeAttr('disabled');
-                $('.validacion-errors').removeClass('dnone');
                 $('#loading-i').remove();
+                $('.validacion-errors').removeClass('dnone');
                 console.error(err);
             }
         })
@@ -535,7 +521,8 @@ function createDonationIban(dataLead, authToken) {
     localStorage.setItem('tipo', tipoSessionPago);
 
     var dataToDrm = {
-        "front": "landing-page",
+        "op": "doni",
+        "tk": authToken,
         "frequency": frequency,
         "amount": dataLead.monto,
         "campaign": dataLead.nombreCampana,
@@ -551,36 +538,27 @@ function createDonationIban(dataLead, authToken) {
         "tax_exemption": $('#check_desgravacion').prop('checked') == true ? false : true,
         "anonymous": $('#check_donacion_anonima').prop('checked'),
         "payment_type": "Domiciliación bancaria",
-        /*"stripe_token": "",
-        "credit_card": {},*/
-        "direct_debit" : {
-            "b_owner": dataLead.titular,
-            "b_iban": dataLead.iban,
-            "b_bank":  dataLead.entidad,
-            "b_office": dataLead.oficina,
-            "b_dc": dataLead.dc,
-            "b_number": dataLead.num_cuenta
-        },
-        "utm" : {
-            "utm_campaign": $('#utm_campaign').val().trim(),
-            "utm_source": $('#utm_source').val().trim(),
-            "utm_medium": $('#utm_medium').val().trim(),
-            "utm_content": $('#utm_content').val().trim(),
-            "utm_term": $('#utm_term').val().trim()
-        },
+        "b_owner": dataLead.titular,
+        "b_iban": dataLead.iban,
+        "b_bank":  dataLead.entidad,
+        "b_office": dataLead.oficina,
+        "b_dc": dataLead.dc,
+        "b_number": dataLead.num_cuenta,
+        "utm_campaign": $('#utm_campaign').val().trim(),
+        "utm_source": $('#utm_source').val().trim(),
+        "utm_medium": $('#utm_medium').val().trim(),
+        "utm_content": $('#utm_content').val().trim(),
+        "utm_term": $('#utm_term').val().trim(),
         "personal_data_auth" : $('#aceptar_politicas').val()
     }
-    console.log('DATOS RECOLECTADOS');
-    console.log(dataToDrm);
     $.ajax({
-        url: prodUrl+'donation_via_landing_page/add_donation',
+        url: window.location.origin+'/donar/service.php',
         method: 'POST',
         data: dataToDrm,
-        headers: {"Authorization": authToken },
         success: (data) => {
-            console.log(data);
-            if(data.data.client) {
-                var response = data.data;
+            var data2 = JSON.parse(data);
+            if(data2.data.client) {
+                var response = data2.data;
                 /*window.MONTO = $('#input_cantidad').val().trim();
                 window.dataLayer.push({
                     'event': 'DonationEnd'
@@ -636,12 +614,14 @@ function createDonationIban(dataLead, authToken) {
             } else {
                 console.log(data);
                 $('.validacion-errors').removeClass('dnone');
+                $('#btn_continuar').removeAttr('disabled');
+                $('#loading-i').remove();
             }
         },
         error: (err) => {
             $('#btn_continuar').removeAttr('disabled');
-            $('.validacion-errors').removeClass('dnone');
             $('#loading-i').remove();
+            $('.validacion-errors').removeClass('dnone');
             console.error(err);
         }
     });

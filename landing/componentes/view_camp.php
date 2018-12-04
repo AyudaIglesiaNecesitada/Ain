@@ -58,18 +58,9 @@ if (isset($_GET['donativo'])) {
 		display: none!important;
 	}
 </style>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-5LR7WFB');</script>
-<!-- End Google Tag Manager -->
 <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5LR7WFB"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5LR7WFB" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-
 
 <div class="container-companas">
 	<!---LISTA/MODULO-->
@@ -246,12 +237,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 						<div class="col label_form_datos_personales">
 							<span class="label_form">*UTM</span>
 						</div>
+						<?php           	
+						if (isset($_GET['utm_source'])) {
+							$utm_source_url = $_GET['utm_source'];
+						}if(isset($_GET['utm_medium'])){
+							$utm_medium_url = $_GET['utm_medium'];
+						}if(isset($_GET['utm_campaign'])){
+							$utm_campaign_url = $_GET['utm_campaign'];
+						}if(isset($_GET['utm_term'])){
+							$utm_term_url = $_GET['utm_term'];
+						}if(isset($_GET['utm_content'])){
+							$utm_content_url = $_GET['utm_content'];
+						}		
+						?>
 						<div class="col datos_basicos">
-							<input id="utm_campaign" type="text" value="<?php echo $utm_campaign ?>">
-							<input id="utm_source" type="text" value="<?php echo $utm_source ?>">
-							<input id="utm_medium" type="text" value="<?php echo $utm_medium ?>">
-							<input id="utm_content" type="text" value="<?php echo $utm_content ?>">
-							<input id="utm_term" type="text" value="<?php echo $utm_term ?>">
+							<input id="utm_campaign" type="text" value="<?php if(!empty($utm_campaign_url)){echo $utm_campaign_url;}else{echo $utm_campaign;}?>">
+							<input id="utm_source" type="text" value="<?php if(!empty($utm_source_url)){echo $utm_source_url;}else{echo $utm_source;} ?>">
+							<input id="utm_medium" type="text" value="<?php if(!empty($utm_medium_url)){echo $utm_medium_url;}else{echo $utm_medium;} ?>">
+							<input id="utm_content" type="text" value="<?php if(!empty($utm_content_url)){echo $utm_content_url;}else{echo $utm_content;} ?>">
+							<input id="utm_term" type="text" value="<?php if(!empty($utm_term_url)){echo $utm_term_url;}else{echo $utm_term;} ?>">
 						</div>
 					</div>
 					<div class="input-field col s12 hide">

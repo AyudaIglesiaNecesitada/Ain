@@ -4,12 +4,33 @@
 
       <!--ENLACES DE LAS LIBRERÍAS-->
       <?php require 'componentes/enlaces-head.php'; ?>
-      
+      <?php 
+              $posts = get_posts(array(
+                'post_type' => 'drm',
+                'post_status' => 'publish',
+                'posts_per_page' => 1,
+              ));
+              
+              if($posts){
+              
+                foreach($posts as $post)
+                {
+                  $user = get_field('user');
+                  $pass = get_field('pass');
+                  $url = get_field('end_point');
+                  $test_url = get_field('test_url');
+                  
+                }
+              
+              }
+              
+?>
+
       <meta http-equiv="x-ua-compatible" content="IE=edge">
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Ayuda a la Iglesia Necesitada</title>
     </head>
-
     <body>
       <!--cargador-->
         <div class="preloader-background">

@@ -1,8 +1,3 @@
-var testUrl = 'https://drmbackend1.localtunnel.me/';
-var prodUrl = 'https://api4drmv1.ayudaalaiglesianecesitada.org/';
-var UserAuth = 'drm_system@ayudaalaiglesianecesitada.org';
-var UserPass = 'hXsQRame46';
-
 $(document).ready(function(){
     $('select').formSelect();
      $('.collapsible').collapsible();
@@ -100,30 +95,30 @@ if(newClient) {
   $(document).ready(function(){
     $('.renovalDate').text(renovalDate);
     $.ajax({
-        url: prodUrl+'donation_via_landing_page/authenticate',
+        url: window.location.origin+'/donar/service.php',
         method: 'POST',
         data: {
-            front: 'landing-page',
-            user: UserAuth,
-            password: UserPass
+            op: 'at'
         },
         success: (data) => {
-            console.log(data);
-            if(data.data.auth_token) {
-                var authToken = data.data.auth_token;
+            var dataN = JSON.parse(data);
+            if(dataN.data.auth_token) {
+                var authToken = dataN.data.auth_token;
                 $.ajax({
-                    url: prodUrl+'donation_via_landing_page/get_client_and_donation_info',
+                    url: window.location.origin+'/donar/service.php',
                     method: 'POST',
-                    headers: {"Authorization": authToken },
                     data: {
-                        front: "landing-page",
+                        op: 'gd',
+                        tk: authToken,
                         client_id: idClient,
                         donation_id: idDonacion
                     },
                     success: (data2) => {
-                        var info = data2.data;
-                        console.log(info);
-                        if(data2.codeError == false) {
+                        console.log(data2);
+                        var dataN2 = JSON.parse(data2);
+                        var info = dataN2.data;
+                        
+                        if(dataN2.codeError == false) {
                             $('.nombre_donante').text(info.client.first_name);
                             $('#monto_donacion').text(info.donation.amount+'€');
                             $('#nombre_campaña').text(info.donation.campaign);
@@ -267,48 +262,42 @@ $("#btn_enviar").click(function (e) {
                 $('#btn_enviar').append('<i class="material-icons" id="loading-i">autorenew</i>');
                 $('#loading-i').addClass('spin-loader')
                 var objectDataTax = {
-                    front: 'landing-page',
+                    op: 'ds',
                     donation_id: idDonacion,
                     new_client: newClient,
                     update_data: $('#modificar_datos_individual').prop('checked') ? true: false,
                     info_wills: $('#testamentos').prop('checked') ? true: false,
-                    tax_exemption: {
-                        person_type: 'Individual',
-                        nif_cif: nif,
-                        identification_type: 'nif',
-                        business_name: '',
-                        name: nombre,
-                        surname: apellido,
-                        email: email,
-                        phone: telefono,
-                        address: `${tipovia} ${nombre_via} ${numero}, ${piso}, ${letra}, ${rest}`,
-                        street_type: tipovia,
-                        street_name: nombre_via,
-                        number: numero,
-                        floor: piso,
-                        apt_number: letra,
-                        street_rest: rest,
-                        zip_code: cp,
-                        city_id: ciudad,
-                        country_id: pais,
-                        birth_date: birth_date,
-                        renew_date: renovalDate2                        
-                    }
+                    person_type: 'Individual',
+                    nif_cif: nif,
+                    identification_type: 'nif',
+                    business_name: '',
+                    name: nombre,
+                    surname: apellido,
+                    email: email,
+                    phone: telefono,
+                    address: `${tipovia} ${nombre_via} ${numero}, ${piso}, ${letra}, ${rest}`,
+                    street_type: tipovia,
+                    street_name: nombre_via,
+                    number: numero,
+                    floor: piso,
+                    apt_number: letra,
+                    street_rest: rest,
+                    zip_code: cp,
+                    city_id: ciudad,
+                    country_id: pais,
+                    birth_date: birth_date,
+                    renew_date: renovalDate2
                 };
-                console.log(objectDataTax);
-                //https://api4paulusv1.dar.agency
                 $.ajax({
-                    url: prodUrl+'donation_via_landing_page/authenticate',
+                    url: window.location.origin+'/donar/service.php',
                     method: 'POST',
                     data: {
-                        front: 'landing-page',
-                        user: UserAuth,
-                        password: UserPass
+                        op: 'at'
                     },
                     success: (data) => {
-                        console.log(data);
-                        if(data.data.auth_token) {
-                            var authToken = data.data.auth_token;
+                        var data2 = JSON.parse(data);
+                        if(data2.data.auth_token) {
+                            var authToken = data2.data.auth_token;
                             taxExemption(objectDataTax, authToken);
                         } else {
                             console.log(data);
@@ -435,48 +424,42 @@ $("#btn_enviar").click(function (e) {
                 $('#loading-i').addClass('spin-loader')
                 
                 var objectDataTax = {
-                    front: 'landing-page',
+                    op: 'ds',
                     donation_id: idDonacion,
                     new_client: newClient,
                     update_data: $('#modificar_datos_individual').prop('checked') ? true: false,
                     info_wills: $('#testamentos').prop('checked') ? true: false,
-                    tax_exemption: {
-                        person_type: 'Individual',
-                        nif_cif: nif,
-                        identification_type: 'nif',
-                        business_name: '',
-                        name: nombre,
-                        surname: apellido,
-                        email: email,
-                        phone: telefono,
-                        address: `${tipovia} ${nombre_via} ${numero}, ${piso}, ${letra}, ${rest}`,
-                        street_type: tipovia,
-                        street_name: nombre_via,
-                        number: numero,
-                        floor: piso,
-                        apt_number: letra,
-                        street_rest: rest,
-                        zip_code: cp,
-                        city_id: ciudad,
-                        country_id: pais,
-                        birth_date: birth_date,
-                        renew_date: renovalDate2
-                    }
+                    person_type: 'Individual',
+                    nif_cif: nif,
+                    identification_type: 'nif',
+                    business_name: '',
+                    name: nombre,
+                    surname: apellido,
+                    email: email,
+                    phone: telefono,
+                    address: `${tipovia} ${nombre_via} ${numero}, ${piso}, ${letra}, ${rest}`,
+                    street_type: tipovia,
+                    street_name: nombre_via,
+                    number: numero,
+                    floor: piso,
+                    apt_number: letra,
+                    street_rest: rest,
+                    zip_code: cp,
+                    city_id: ciudad,
+                    country_id: pais,
+                    birth_date: birth_date,
+                    renew_date: renovalDate2
                 };
-                console.log(objectDataTax);
-                //https://api4paulusv1.dar.agency
                 $.ajax({
-                    url: prodUrl+'donation_via_landing_page/authenticate',
+                    url: window.location.origin+'/donar/service.php',
                     method: 'POST',
                     data: {
-                        front: 'landing-page',
-                        user: UserAuth,
-                        password: UserPass
+                        op: 'at'
                     },
                     success: (data) => {
-                        console.log(data);
-                        if(data.data.auth_token) {
-                            var authToken = data.data.auth_token;
+                        var data2 = JSON.parse(data);
+                        if(data2.data.auth_token) {
+                            var authToken = data2.data.auth_token;
                             taxExemption(objectDataTax, authToken);
                         } else {
                             $('.validacion-errors').removeClass('dnone');
@@ -578,47 +561,43 @@ $("#btn_enviar").click(function (e) {
                 $('#btn_enviar').append('<i class="material-icons" id="loading-i">autorenew</i>');
                 $('#loading-i').addClass('spin-loader')
                 var objectDataTaxOrg = {
-                    front: 'landing-page',
+                    op: 'ds',
                     donation_id: idDonacion,
                     new_client: newClient,
                     update_data: $('#modificar_datos_organizacion').prop('checked') ? true: false,
                     info_wills: false,
-                    tax_exemption: {
-                        person_type: 'Organización',
-                        nif_cif: cif,
-                        identification_type: 'cif',
-                        business_name: nombre_empresa,
-                        name: personacontacto,
-                        surname: '',
-                        email: email_empresa,
-                        phone: telefono_empresa,
-                        address: `${tipo_via_empresa} ${nombre_via_empresa} ${numero_empresa}, ${piso_empresa} ${letra_empresa}, ${rest_empresa}`,
-                        street_type: tipo_via_empresa,
-                        street_name: nombre_via_empresa,
-                        number: numero_empresa,
-                        floor: piso_empresa,
-                        apt_number: letra_empresa,
-                        street_rest: rest_empresa,
-                        zip_code: cp_empresa,
-                        city_id: ciudad_empresa,
-                        country_id: pais_organizacion,
-                        birth_date: "",
-                        renew_date: renovalDate2
-                    }
+                    person_type: 'Organización',
+                    nif_cif: cif,
+                    identification_type: 'cif',
+                    business_name: nombre_empresa,
+                    name: personacontacto,
+                    surname: '',
+                    email: email_empresa,
+                    phone: telefono_empresa,
+                    address: `${tipo_via_empresa} ${nombre_via_empresa} ${numero_empresa}, ${piso_empresa} ${letra_empresa}, ${rest_empresa}`,
+                    street_type: tipo_via_empresa,
+                    street_name: nombre_via_empresa,
+                    number: numero_empresa,
+                    floor: piso_empresa,
+                    apt_number: letra_empresa,
+                    street_rest: rest_empresa,
+                    zip_code: cp_empresa,
+                    city_id: ciudad_empresa,
+                    country_id: pais_organizacion,
+                    birth_date: "",
+                    renew_date: renovalDate2
                 };
-                //https://api4paulusv1.dar.agency
+                
                 $.ajax({
-                    url: prodUrl+'donation_via_landing_page/authenticate',
+                    url: window.location.origin+'/donar/service.php',
                     method: 'POST',
                     data: {
-                        front: 'landing-page',
-                        user: UserAuth,
-                        password: UserPass
+                        op: 'at'
                     },
                     success: (data) => {
-                        console.log(data);
-                        if(data.data.auth_token) {
-                            var authToken = data.data.auth_token;
+                        var data2 = JSON.parse(data);
+                        if(data2.data.auth_token) {
+                            var authToken = data2.data.auth_token;
                             taxExemption(objectDataTaxOrg, authToken);
                         } else {
                             console.log(data);
@@ -734,47 +713,43 @@ $("#btn_enviar").click(function (e) {
                 $('#btn_enviar').append('<i class="material-icons" id="loading-i">autorenew</i>');
                 $('#loading-i').addClass('spin-loader')
                 var objectDataTaxOrg = {
-                    front: 'landing-page',
+                    op: 'ds',
                     donation_id: idDonacion,
                     new_client: newClient,
                     update_data: $('#modificar_datos_organizacion').prop('checked') ? true: false,
                     info_wills: false,
-                    tax_exemption: {
-                        person_type: 'Organización',
-                        nif_cif: cif,
-                        identification_type: 'cif',
-                        business_name: nombre_empresa,
-                        name: personacontacto,
-                        surname: '',
-                        email: email_empresa,
-                        phone: telefono_empresa,
-                        address: `${tipo_via_empresa} ${nombre_via_empresa} ${numero_empresa}, ${piso_empresa} ${letra_empresa}, ${rest_empresa}`,
-                        street_type: tipo_via_empresa,
-                        street_name: nombre_via_empresa,
-                        number: numero_empresa,
-                        floor: piso_empresa,
-                        apt_number: letra_empresa,
-                        street_rest: rest_empresa,
-                        zip_code: cp_empresa,
-                        city_id: ciudad_empresa,
-                        country_id: pais_organizacion,
-                        birth_date: "",
-                        renew_date: renovalDate2
-                    }
+                    person_type: 'Organización',
+                    nif_cif: cif,
+                    identification_type: 'cif',
+                    business_name: nombre_empresa,
+                    name: personacontacto,
+                    surname: '',
+                    email: email_empresa,
+                    phone: telefono_empresa,
+                    address: `${tipo_via_empresa} ${nombre_via_empresa} ${numero_empresa}, ${piso_empresa} ${letra_empresa}, ${rest_empresa}`,
+                    street_type: tipo_via_empresa,
+                    street_name: nombre_via_empresa,
+                    number: numero_empresa,
+                    floor: piso_empresa,
+                    apt_number: letra_empresa,
+                    street_rest: rest_empresa,
+                    zip_code: cp_empresa,
+                    city_id: ciudad_empresa,
+                    country_id: pais_organizacion,
+                    birth_date: "",
+                    renew_date: renovalDate2
                 };
-                //https://api4paulusv1.dar.agency
+                
                 $.ajax({
-                    url: prodUrl+'donation_via_landing_page/authenticate',
+                    url: window.location.origin+'/donar/service.php',
                     method: 'POST',
                     data: {
-                        front: 'landing-page',
-                        user: UserAuth,
-                        password: UserPass
+                        op: 'at'
                     },
                     success: (data) => {
-                        console.log(data);
-                        if(data.data.auth_token) {
-                            var authToken = data.data.auth_token;
+                        var data2 = JSON.parse(data);
+                        if(data2.data.auth_token) {
+                            var authToken = data2.data.auth_token;
                             taxExemption(objectDataTaxOrg, authToken);
                         } else {
                             console.log(data);
@@ -841,20 +816,19 @@ $("#btn_enviar").click(function (e) {
 
 
 function taxExemption(dataLead, authToken) {
-    //https://api4paulusv1.dar.agency/donation_via_landing_page/tax_exemption
+    dataLead.tk = authToken;
     $.ajax({
-        url: prodUrl+'donation_via_landing_page/tax_exemption',
+        url: window.location.origin+'/donar/service.php',
         method: 'POST',
         data: dataLead,
-        headers: { "Authorization": authToken },
         success: (data) => {
-            console.log(data);
-            if(data.codeError == false) {
+            var data2 = JSON.parse(data);
+            if(data2.codeError == false) {
                 //Set In Session
                 window.dataLayer.push({
                     'event': 'Desgravacion'
                 });
-                sessionStorage.setItem('lead', dataLead.tax_exemption.name);
+                sessionStorage.setItem('lead', dataLead.name);
                 var cid = sessionStorage.getItem('cid');
                 window.setTimeout(() => {
                     window.location.href = '/donar/gracias.php?cid='+cid
